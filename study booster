@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alarm</title>
+<style>
+  body {
+    background-color: black;
+    color: white;
+    text-align: center;
+    font-family: Arial, sans-serif;
+  }
+  #startBtn {
+    background-color: green;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    margin: 10px;
+  }
+  #stopBtn {
+    background-color: red;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    margin: 10px;
+  }
+</style>
+</head>
+<body>
+
+<h2>Alarm</h2>
+
+<button id="startBtn" onclick="startTimer()">Start</button>
+<button id="stopBtn" onclick="stopTimer()">Stop</button>
+
+<p id="timer"></p>
+
+<audio id="beep" preload="auto">
+  <source src="https://www.soundjay.com/button/beep-07.wav" type="audio/wav">
+</audio>
+
+<script>
+var timeLeft = 1500; // 25 minutes in seconds
+var timerInterval;
+var is25MinTimer = true;
+
+function startTimer() {
+  timerInterval = setInterval(function() {
+    timeLeft--;
+    document.getElementById("timer").textContent = formatTime(timeLeft);
+    if (timeLeft === 0) {
+      clearInterval(timerInterval);
+      if (is25MinTimer) {
+        timeLeft = 300; // 5 minutes in seconds
+        is25MinTimer = false;
+        speak("Take a break");
+      } else {
+        timeLeft = 1500; // 25 minutes in seconds
+        is25MinTimer = true;
+        speak("Start working");
+      }
+      document.getElementById('beep').play();
+      startTimer();
+    }
+  }, 1000);
+}
+
+function stopTimer() {
+  clearInterval(timerInterval);
+}
+
+function formatTime(seconds) {
+  var minutes = Math.floor(seconds / 60);
+  var remainingSeconds = seconds % 60;
+  return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+}
+
+function speak(message) {
+  var msg = new SpeechSynthesisUtterance(message);
+  window.speechSynthesis.speak(msg);
+}
+</script>
+
+</body>
+</html>
